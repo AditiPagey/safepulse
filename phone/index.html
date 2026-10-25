@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#2563eb" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <title>SafePulse</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; margin: 0; padding: 16px; background: #f3f4f6; color: #111; }
+    .screen { display: none; max-width: 480px; margin: 0 auto; }
+    .screen.active { display: block; }
+    h1 { font-size: 24px; margin: 8px 0 12px; }
+    button { width: 100%; padding: 16px; font-size: 18px; font-weight: 600; border: none; border-radius: 12px; margin: 8px 0; background: #2563eb; color: #fff; }
+    button.safe { background: #16a34a; }
+    button.help { background: #dc2626; }
+    button.grey { background: #6b7280; }
+    button.big { padding: 26px; font-size: 22px; }
+    select { width: 100%; padding: 12px; font-size: 16px; margin: 8px 0; border-radius: 8px; }
+    .chip { display: inline-block; padding: 6px 12px; border-radius: 20px; color: #fff; background: #16a34a; font-weight: 600; }
+    .chip.paused { background: #d97706; }
+    .card { background: #fff; padding: 12px; border-radius: 12px; margin: 10px 0; }
+    .muted { color: #555; font-size: 14px; }
+    .err { color: #dc2626; font-weight: 600; }
+    .ok { color: #16a34a; font-weight: 600; }
+    .banner { background: #2563eb; color: #fff; padding: 12px; border-radius: 12px; font-weight: 600; }
+    #prompt-title { font-size: 30px; line-height: 1.2; }
+    .countdown { font-size: 22px; font-weight: 700; }
+    canvas { width: 100%; height: 120px; background: #111; border-radius: 8px; }
+    #debug { font-family: ui-monospace, monospace; font-size: 11px; white-space: pre-wrap; word-break: break-all; }
+    a { color: #2563eb; }
+    input[type=range] { width: 100%; }
+  </style>
+</head>
+<body>
+
+  <!-- 1. ONBOARDING -->
+  <div id="screen-onboarding" class="screen">
+    <h1>SafePulse</h1>
+    <p id="reregister-msg" class="err" style="display:none">Your sign-in expired. Please sign up again.</p>
+    <p class="card">
+      SafePulse listens to your phone's motion sensors only while this app is open.
+      If it detects a strong, sustained shake, it asks if you are safe and shares one
+      location reading and the time with the emergency department. It does not track
+      you at any other time. The department keeps the record as an incident history.
+      <br /><br />
+      <span class="muted">We will ask for location access now so the permission popup appears early.</span>
+    </p>
+    <label><b>Your region</b></label>
+    <select id="region-select"></select>
+    <button id="btn-start">I agree, start</button>
+    <p id="onboard-msg" class="muted"></p>
+  </div>
+
+  <!-- 2. HOME -->
+  <div id="screen-home" class="screen">
+    <h1>SafePulse</h1>
+    <span id="monitor-chip" class="chip">Monitoring active</span>
+    <p class="muted">Keep this screen open. Shaking is only detected while the app is open and the screen is on.</p>
+    <button id="btn-enable-motion" style="display:none">Enable motion sensor</button>
+    <button id="btn-view-case" class="grey" style="display:none">View my last check-in</button>
+
+    <div id="demo-tools" style="display:none">
+      <div class="card">
+        <b>Simulate shake</b>
+        <label>Score: <span id="sim-score-val">0.80</span></label>
+        <input id="sim-score" type="range" min="0" max="1" step="0.05" value="0.8" />
+        <label>Location offset: <span id="sim-offset-val">0</span> m</label>
+        <input id="sim-offset" type="range" min="0" max="2000" step="25" value="0" />
+        <button id="btn-simulate">Simulate shake</button>
+      </div>
+      <div class="card">
+        <b>Live sensor (last 10 s)</b>
+        <canvas id="graph" width="600" height="200"></canvas>
+        <div id="live-stats" class="muted">waiting for sensor...</div>
+        <div class="muted">Yellow line = T_LOW, red line = T_HIGH</div>
+      </div>
+      <div class="card">
+        <b>Debug</b>
+        <div id="debug"></div>
+        <button id="btn-reset" class="grey">Reset app (sign out)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. PROMPT -->
+  <div id="screen-prompt" class="screen">
+    <h1 id="prompt-title">Strong shaking detected. Are you safe?</h1>
+    <button id="btn-safe" class="safe big">I'M SAFE</button>
+    <button id="btn-help" class="help big">I NEED HELP</button>
+    <p id="prompt-countdown" class="countdown"></p>
+    <p class="send-status muted"></p>
+  </div>
+
+  <!-- 4. STATUS -->
+  <div id="screen-status" class="screen">
+    <h1>Your check-in</h1>
+    <div id="shelter-banner" class="banner" style="display:none">Shelter information received</div>
+    <div id="case-status" class="card">Loading...</div>
+    <p id="status-countdown" class="countdown"></p>
+    <p class="send-status muted"></p>
+    <div id="late-buttons">
+      <button id="btn-late-safe" class="safe">I'm safe</button>
+      <button id="btn-late-help" class="help">I need help</button>
+    </div>
+    <div id="shelters"></div>
+    <button id="btn-done" class="grey">Back to monitoring</button>
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>
