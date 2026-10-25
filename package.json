@@ -1,0 +1,4 @@
+{"name":"safepulse-devc","private":true,"type":"module",
+"scripts":{"mock":"node mock/mock-dept-api.js","dev":"vite dashboard","build":"vite build dashboard --outDir ../server/public/dashboard --emptyOutDir","sim":"node sim/run.js"},
+"dependencies":{"cors":"^2.8.5","express":"^4.19.2","leaflet":"^1.9.4","react":"^18.3.1","react-dom":"^18.3.1","react-leaflet":"^4.2.1","zustand":"^4.5.2"},
+"devDependencies":{"@vitejs/plugin-react":"^4.3.1","vite":"^5.4.0"}}
