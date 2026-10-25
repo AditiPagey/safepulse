@@ -1,5 +1,15 @@
+<<<<<<< HEAD
 node_modules
 dist
 .env
 .env.local
 *.log
+=======
+node_modules/
+.env
+*.log
+.venv/
+__pycache__/
+*.pyc
+.DS_Store
+>>>>>>> 331a9866bc9e8d41646d65ac7e7008d46dafcd3b
